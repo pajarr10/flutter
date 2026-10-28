@@ -9,8 +9,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Extract ZIP
+        run: |
+          mkdir source
+          unzip -o *.zip -d source
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -22,17 +27,17 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          cache: true
 
       - name: Install dependencies
+        working-directory: source
         run: flutter pub get
 
       - name: Build APK
+        working-directory: source
         run: flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flutter-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          
+          path: source/build/app/outputs/flutter-apk/app-release.apk
